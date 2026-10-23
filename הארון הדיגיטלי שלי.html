@@ -1,0 +1,438 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>הארון הדיגיטלי שלי</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@700;900&family=Rubik:wght@400;500;600&display=swap">
+<style>
+/* Layout: app shell. Dark sidebar with four sections (ארון, לוק, צילום בגד, הגדרות); each section is a tidy two-column page. Bottom tab bar on phones. */
+:root{
+  --bg:#eef1ee;
+  --surface:#ffffff;
+  --tile:#ffffff;
+  --fg:#16211b;
+  --muted:#5f6d65;
+  --line:#dbe2dc;
+  --green:#2E7D4F;
+  --green-ink:#ffffff;
+  --green-soft:#dcebe0;
+  --side:#13201a;
+  --side-fg:#dfe9e2;
+  --side-muted:#8da296;
+  --accent:#c98a3a;
+  --font-display:"Frank Ruhl Libre",Georgia,serif;
+  --font-body:"Rubik",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0c1511;--surface:#15231c;--fg:#e6eee8;--muted:#9bb0a2;--line:#27392f;
+  --green:#4fb07a;--green-ink:#0b1710;--green-soft:#1c3326;--side:#0a110e;--accent:#d9a050;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0c1511;--surface:#15231c;--fg:#e6eee8;--muted:#9bb0a2;--line:#27392f;
+  --green:#4fb07a;--green-ink:#0b1710;--green-soft:#1c3326;--side:#0a110e;--accent:#d9a050;color-scheme:dark}
+
+[hidden]{display:none!important}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:15px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0}
+h1,h2,h3{margin:0;text-wrap:balance}
+p{margin:0}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:8px}
+
+.shell{display:grid;grid-template-columns:230px minmax(0,1fr);gap:24px;max-width:1240px;margin:0 auto;padding-block:16px}
+.side{background:var(--side);color:var(--side-fg);border-radius:24px;padding:22px 14px;display:flex;flex-direction:column;gap:28px;
+  position:sticky;top:calc(16px + env(safe-area-inset-top,0px));height:calc(100dvh - 32px);max-height:760px;align-self:start}
+.logo{font-family:var(--font-display);font-weight:900;font-size:1.3rem;line-height:1.2;padding-inline:8px}
+.logo small{display:block;font-family:var(--font-body);font-weight:400;font-size:.78rem;color:var(--side-muted);margin-top:6px}
+.nav{display:flex;flex-direction:column;gap:4px}
+.nav button{display:flex;align-items:center;gap:12px;border:0;background:transparent;cursor:pointer;color:var(--side-muted);
+  padding:12px 14px;border-radius:14px;font-weight:500;text-align:start}
+.nav button svg{width:22px;height:22px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.nav button:hover{background:rgba(255,255,255,.06);color:var(--side-fg)}
+.nav button[aria-current="page"]{background:var(--green);color:var(--green-ink)}
+
+main{min-width:0}
+.page{background:var(--surface);border-radius:24px;box-shadow:0 0 0 1px var(--line);padding:26px;display:flex;flex-direction:column;gap:22px;min-height:calc(100dvh - 32px)}
+.page>header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.page h1{font-family:var(--font-display);font-weight:900;font-size:1.9rem}
+.sub{color:var(--muted);font-size:.92rem}
+
+.btn{border:0;cursor:pointer;background:var(--green);color:var(--green-ink);font-weight:500;padding:10px 22px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--fg);box-shadow:inset 0 0 0 1.5px var(--line)}
+.btn[disabled]{opacity:.45;cursor:default}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{cursor:pointer;border:0;background:transparent;padding:7px 16px;border-radius:10px;box-shadow:inset 0 0 0 1.5px var(--line);font-size:.92rem}
+.chip[aria-pressed="true"]{background:var(--green);color:var(--green-ink);box-shadow:none}
+.label{font-size:.78rem;font-weight:500;letter-spacing:.06em;color:var(--muted);margin-bottom:8px}
+
+.tile{background:var(--tile);border-radius:16px;box-shadow:0 0 0 1px var(--line);position:relative;min-width:0;min-height:0;overflow:hidden;--pad:10px}
+.tile img{position:absolute;inset:var(--pad);width:calc(100% - var(--pad)*2);height:calc(100% - var(--pad)*2);object-fit:contain;display:block}
+
+/* closet */
+.closet{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.closet .tile{aspect-ratio:1/1.1}
+.del{position:absolute;top:8px;inset-inline-end:8px;width:26px;height:26px;border-radius:8px;border:0;cursor:pointer;background:rgba(19,32,26,.08);color:#3a4a41;font-size:16px;line-height:1;padding:0;opacity:.0;transition:opacity .15s}
+.tile:hover .del,.del:focus-visible{opacity:1}
+@media (hover:none){.del{opacity:1}}
+.del:hover{background:#b8432f;color:#fff}
+
+/* look */
+.cols{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:24px;align-items:start}
+.stage{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stage .tile{aspect-ratio:1/1;--pad:14px}
+.stage .wide{grid-column:1/-1;aspect-ratio:2.4/1}
+.stepper{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px}
+.count{font-variant-numeric:tabular-nums;color:var(--muted)}
+.panel{display:flex;flex-direction:column;gap:22px}
+.range{display:flex;align-items:center;gap:14px}
+.range input{flex:1;min-width:0;accent-color:var(--green)}
+.temp{font-variant-numeric:tabular-nums;font-weight:600;font-size:1.5rem;min-width:3.2ch}
+.auto{font-size:.85rem;font-weight:500;background:var(--green-soft);color:var(--fg);padding:3px 12px;border-radius:8px}
+.alts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.alt{border:0;cursor:pointer;background:var(--tile);border-radius:14px;box-shadow:0 0 0 1px var(--line);padding:6px;display:grid;grid-template-columns:1fr 1fr;gap:2px;aspect-ratio:1;align-items:center;justify-items:center;min-width:0}
+.alt[aria-current="true"]{box-shadow:0 0 0 3px var(--green)}
+.alt img{width:100%;height:100%;max-height:52px;object-fit:contain}
+.empty{color:var(--muted);padding:40px 12px;text-align:center;background:var(--bg);border-radius:16px}
+
+/* capture */
+.drop{display:grid;place-items:center;align-content:center;gap:12px;text-align:center;padding:56px 20px;border-radius:20px;border:2px dashed var(--line);cursor:pointer;color:var(--muted)}
+.drop:hover,.drop:focus-within{border-color:var(--green);background:var(--green-soft);color:var(--fg)}
+.drop svg{width:44px;height:44px;fill:none;stroke:var(--green);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.compare figure{margin:0;display:flex;flex-direction:column;gap:8px;min-width:0}
+.compare .tile{aspect-ratio:1/1;--pad:14px}
+.compare figcaption{font-size:.8rem;color:var(--muted)}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.swatch{width:26px;height:26px;border-radius:50%;box-shadow:0 0 0 2px var(--surface),0 0 0 3px var(--line);display:inline-block;vertical-align:middle}
+.tips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0;padding:0;list-style:none}
+.tips li{background:var(--bg);border-radius:14px;padding:14px;font-size:.9rem;color:var(--muted)}
+.tips b{display:block;color:var(--fg);font-weight:600;margin-bottom:2px}
+
+/* settings */
+.rows{display:flex;flex-direction:column}
+.row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:center;padding-block:18px;border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.row h3{font-size:1rem;font-weight:600}
+.row p{color:var(--muted);font-size:.88rem}
+.row input[type=range]{width:100%;accent-color:var(--green)}
+
+/* phones */
+@media (max-width:860px){
+  .shell{grid-template-columns:1fr;padding-bottom:84px;gap:0}
+  .side{position:fixed;inset:auto 0 0 0;top:auto;height:auto;max-height:none;border-radius:20px 20px 0 0;z-index:20;padding:8px max(10px,env(safe-area-inset-left,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-right,0px));flex-direction:row;gap:0}
+  .logo{display:none}
+  .nav{flex-direction:row;width:100%;gap:2px}
+  .nav button{flex:1;flex-direction:column;gap:3px;font-size:.72rem;padding:8px 2px;justify-content:center;min-width:0;text-align:center}
+  .page{min-height:0;padding:18px}
+  .cols,.compare,.opts,.row{grid-template-columns:1fr}
+  .tips{grid-template-columns:1fr}
+  .drop{padding:36px 16px}
+}
+@media (prefers-reduced-motion:no-preference){
+  .tile img{transition:transform .25s}
+  .tile:hover img{transform:scale(1.04)}
+}
+</style>
+
+<div class="shell" dir="rtl" lang="he">
+  <aside class="side">
+    <div class="logo">הארון הדיגיטלי שלי<small>לוקים לכל יום</small></div>
+    <nav class="nav" aria-label="ניווט ראשי" id="nav"></nav>
+  </aside>
+
+  <main>
+    <!-- ארון -->
+    <section class="page" id="v-closet" hidden>
+      <header><h1>ארון</h1><span class="sub" id="n-items"></span></header>
+      <div class="chips" id="filters"></div>
+      <div class="closet" id="closet"></div>
+    </section>
+
+    <!-- לוק -->
+    <section class="page" id="v-look" hidden>
+      <header><h1>לוק להיום</h1><span class="sub" id="why"></span></header>
+      <div class="cols">
+        <div>
+          <div id="stage"></div>
+          <div class="stepper">
+            <button class="btn ghost" id="prev" type="button">הקודם</button>
+            <span class="count" id="count"></span>
+            <button class="btn" id="next" type="button">הבא</button>
+          </div>
+        </div>
+        <div class="panel">
+          <div><div class="label">אירוע</div><div class="chips" id="occ"></div></div>
+          <div>
+            <div class="label">טמפרטורה</div>
+            <div class="range">
+              <input id="temp" type="range" min="0" max="40" value="16" aria-label="טמפרטורה">
+              <span class="temp" id="tv"></span>
+              <span class="auto" id="auto"></span>
+            </div>
+          </div>
+          <div><div class="label">עוד אפשרויות</div><div class="alts" id="alts"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- צילום בגד -->
+    <section class="page" id="v-capture" hidden>
+      <header><h1>צילום בגד</h1><span class="sub" id="qinfo"></span></header>
+      <div id="cap-start">
+        <label class="drop" for="file">
+          <svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="3"/><path d="M8 7l1.5-3h5L16 7"/><circle cx="12" cy="13.5" r="3.2"/></svg>
+          <b style="color:var(--fg);font-size:1.1rem">צילום או בחירת תמונה</b>
+          <span>הרקע יוסר אוטומטית והבגד יישאר על רקע לבן.</span>
+        </label>
+        <input id="file" type="file" accept="image/*" multiple hidden>
+        <ul class="tips" style="margin-top:16px">
+          <li><b>רקע אחיד</b>מיטה, קיר או רצפה בצבע אחד.</li>
+          <li><b>אור טבעי</b>בלי צל חזק על הבגד.</li>
+          <li><b>בגד שטוח</b>פרוס על משטח או תלוי ישר.</li>
+        </ul>
+      </div>
+      <div id="cap-result" hidden>
+        <div class="compare">
+          <figure><div class="tile"><img id="im-before" alt=""></div><figcaption>התמונה המקורית</figcaption></figure>
+          <figure><div class="tile"><img id="im-after" alt=""></div><figcaption>אחרי הסרת הרקע <span class="swatch" id="sw"></span></figcaption></figure>
+        </div>
+        <div class="opts" style="margin-top:20px">
+          <div><div class="label">סוג</div><div class="chips" id="c-slot"></div></div>
+          <div><div class="label">סגנון</div><div class="chips" id="c-style"></div></div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:22px;flex-wrap:wrap">
+          <button class="btn" id="c-add" type="button">הוספה לארון</button>
+          <button class="btn ghost" id="c-skip" type="button">דילוג</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- הגדרות -->
+    <section class="page" id="v-settings" hidden>
+      <header><h1>הגדרות</h1></header>
+      <div class="rows">
+        <div class="row"><div><h3>מראה</h3><p>בהיר, כהה או לפי המכשיר.</p></div><div class="chips" id="s-theme"></div></div>
+        <div class="row"><div><h3>סגנון יומיומי</h3><p>רגוע נוטה לבגדים נוחים, חכם נוטה לבגדים מסודרים.</p></div><div class="chips" id="s-style"></div></div>
+        <div class="row"><div><h3>רגישות לקור</h3><p>מזיז את הטמפרטורות שבהן מוצע מעיל או בגדים קלים.</p></div><input id="s-cold" type="range" min="-4" max="4" step="1" value="0" aria-label="רגישות לקור"></div>
+        <div class="row"><div><h3>הארון</h3><p>מוחק את כל הבגדים שצילמת מהמכשיר הזה.</p></div>
+          <div class="chips"><button class="btn ghost" id="s-mine" type="button">מחיקת כל הבגדים</button></div></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+/* ---------- helpers ---------- */
+function hsl(hex){
+  var n=parseInt(hex.slice(1),16),r=(n>>16)/255,g=((n>>8)&255)/255,b=(n&255)/255;
+  var mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2,d=mx-mn,h=0,s=0;
+  if(d){s=d/(1-Math.abs(2*l-1));if(mx===r)h=((g-b)/d)%6;else if(mx===g)h=(b-r)/d+2;else h=(r-g)/d+4;h*=60;if(h<0)h+=360}
+  return{h:h,s:s,l:l};
+}
+
+/* ---------- storage of the user's own photos (IndexedDB, per browser) ---------- */
+var DB=null;
+function dbOpen(cb){try{var r=indexedDB.open('closet',1);r.onupgradeneeded=function(){r.result.createObjectStore('items',{keyPath:'id'})};r.onsuccess=function(){DB=r.result;cb()};r.onerror=function(){cb()}}catch(e){cb()}}
+function dbPut(it){try{if(DB)DB.transaction('items','readwrite').objectStore('items').put(it)}catch(e){}}
+function dbDel(id){try{if(DB)DB.transaction('items','readwrite').objectStore('items').delete(id)}catch(e){}}
+function dbAll(cb){try{if(!DB)return cb([]);var q=DB.transaction('items').objectStore('items').getAll();q.onsuccess=function(){cb(q.result||[])};q.onerror=function(){cb([])}}catch(e){cb([])}}
+
+/* ---------- state ---------- */
+var uid=0;
+var items=[];
+var OCC={school:["בית ספר",0],day:["יום רגיל",.5],out:["יציאה",1.2],wedding:["חתונה",2]};
+var SLOTS={top:"חולצה",bottom:"מכנסיים",outer:"מעיל",shoes:"נעליים"};
+var STYLES={0:"יומיומי",1:"מסודר",2:"רשמי"};
+var S={view:'closet',o:'day',t:16,i:0,seed:1,filter:'all',theme:'auto',smart:false,cold:0};
+var cands=[];
+
+try{var sv=JSON.parse(localStorage.getItem('closet-settings')||'{}');
+  if(sv.theme)S.theme=sv.theme;if(typeof sv.smart==='boolean')S.smart=sv.smart;if(typeof sv.cold==='number')S.cold=sv.cold}catch(e){}
+function saveSettings(){try{localStorage.setItem('closet-settings',JSON.stringify({theme:S.theme,smart:S.smart,cold:S.cold}))}catch(e){}}
+function applyTheme(){var r=document.documentElement;if(S.theme==='auto')r.removeAttribute('data-theme');else r.setAttribute('data-theme',S.theme)}
+
+/* ---------- colour and weather matching ---------- */
+function neutral(c){return c.s<.2||c.l<.18||c.l>.9}
+function pair(a,b){
+  var x=hsl(a),y=hsl(b);if(neutral(x)||neutral(y))return 1;
+  var d=Math.abs(x.h-y.h);if(d>180)d=360-d;
+  if(d<35)return .85;if(d>150)return .7;if(d>100&&d<140)return .5;return .2;
+}
+function rnd(n){var x=Math.sin(n*9301+S.seed*49297)*233280;return x-Math.floor(x)}
+function weather(){var e=S.t-S.cold*1.5;return e<=14?'cold':(e>=25?'hot':'mild')}
+var WXN={cold:"קר",mild:"נעים",hot:"חם"};
+function build(){
+  var by=function(s){return items.filter(function(i){return i.slot===s})};
+  var tops=by('top'),bots=by('bottom'),outs=by('outer'),sh=by('shoes'),w=weather(),list=[];
+  var shoesOpt=sh.length?sh:[null];
+  var outOpt=w==='hot'?[null]:(w==='cold'&&outs.length?outs:[null].concat(outs));
+  var target=OCC[S.o][1]+((S.o==='day'||S.o==='out')&&S.smart?.7:0);
+  tops.forEach(function(t){bots.forEach(function(b){shoesOpt.forEach(function(s){outOpt.forEach(function(o){
+    var set=[t,b].concat(o?[o]:[],s?[s]:[]),sc=0,n=0,i,j;
+    for(i=0;i<set.length;i++)for(j=i+1;j<set.length;j++){sc+=pair(set[i].color,set[j].color);n++}
+    sc/=n;var f=set.reduce(function(a,x){return a+x.f},0)/set.length;
+    var spread=0;set.forEach(function(x){spread+=Math.abs(x.f-f)});spread/=set.length;
+    var score=sc*2+(1-Math.abs(f-target)/2)*2.4-spread*.5+(w==='cold'&&o?.5:0)+rnd(set.reduce(function(a,x){return a*7+x.id},3))*.5;
+    list.push({set:set,score:score});
+  })})})});
+  list.sort(function(a,b){return b.score-a.score});cands=list.slice(0,9);S.i=0;
+}
+
+/* ---------- views ---------- */
+var VIEWS=[['closet','ארון','M12 7.5a2.2 2.2 0 1 0-2.2-2.2M12 7.5V10M2.5 18.5 12 10l9.5 8.5a1 1 0 0 1-.7 1.7H3.2a1 1 0 0 1-.7-1.7Z'],
+ ['look','לוק','M8 3 3 6l2 4 2-1v12h10V9l2 1 2-4-5-3a4 4 0 0 1-8 0Z'],
+ ['capture','צילום בגד','M3 8a3 3 0 0 1 3-3h1.5l1.5-2h6l1.5 2H18a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3Z M12 17a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z'],
+ ['settings','הגדרות','M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1']];
+function el(id){return document.getElementById(id)}
+function chipRow(id,pairs,active,on){
+  var box=el(id);box.innerHTML='';
+  pairs.forEach(function(p){var b=document.createElement('button');b.type='button';b.className='chip';b.textContent=p[1];
+    b.setAttribute('aria-pressed',String(active===p[0]));b.onclick=function(){on(p[0])};box.appendChild(b)});
+}
+function img(it){var im=document.createElement('img');im.src=it.url;im.alt='';return im}
+function tile(it,cls){var d=document.createElement('div');d.className='tile'+(cls?' '+cls:'');d.appendChild(img(it));return d}
+
+function renderNav(){
+  var n=el('nav');n.innerHTML='';
+  VIEWS.forEach(function(v){var b=document.createElement('button');b.type='button';
+    b.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+v[2]+'"/></svg><span>'+v[1]+'</span>';
+    if(S.view===v[0])b.setAttribute('aria-current','page');
+    b.onclick=function(){go(v[0])};n.appendChild(b)});
+}
+function go(v){S.view=v;try{history.replaceState(null,'','#'+v)}catch(e){}
+  VIEWS.forEach(function(x){el('v-'+x[0]).hidden=x[0]!==v});renderNav();
+  if(v==='closet')renderCloset();if(v==='look'){build();renderLook()}if(v==='settings')renderSettings();if(v==='capture')renderCapture();
+  window.scrollTo(0,0)}
+
+function renderCloset(){
+  var f=[['all','הכל']].concat(Object.keys(SLOTS).map(function(k){return[k,SLOTS[k]]}));
+  chipRow('filters',f,S.filter,function(k){S.filter=k;renderCloset()});
+  var box=el('closet');box.innerHTML='';
+  var list=items.filter(function(i){return S.filter==='all'||i.slot===S.filter});
+  list.forEach(function(it){var t=tile(it);var x=document.createElement('button');x.type='button';x.className='del';x.textContent='×';x.setAttribute('aria-label','הסרת פריט');
+    x.onclick=function(){items=items.filter(function(i){return i!==it});dbDel(it.id);renderCloset()};t.appendChild(x);box.appendChild(t)});
+  if(!list.length){box.innerHTML='<div class="empty" style="grid-column:1/-1;display:grid;gap:14px;justify-items:center"><span>'+(items.length?'אין פריטים בקטגוריה הזו.':'הארון ריק. צלמו את הבגד הראשון והרקע יוסר אוטומטית.')+'</span><button class="btn" type="button" id="to-cap">צילום בגד</button></div>';el('to-cap').onclick=function(){go('capture')}}
+  el('n-items').textContent=items.length+' פריטים';
+}
+function renderLook(){
+  chipRow('occ',Object.keys(OCC).map(function(k){return[k,OCC[k][0]]}),S.o,function(k){S.o=k;build();renderLook()});
+  el('tv').textContent=S.t+'°';el('temp').value=S.t;el('auto').textContent=WXN[weather()];
+  el('why').textContent=OCC[S.o][0]+' · '+S.t+'°';
+  var st=el('stage'),c=cands[S.i];st.innerHTML='';
+  el('count').textContent=cands.length?(S.i+1)+' / '+cands.length:'';
+  if(!c){st.innerHTML='<div class="empty" style="display:grid;gap:14px;justify-items:center"><span>כדי להרכיב לוק צריך לפחות חולצה ומכנסיים בארון.</span><button class="btn" type="button" id="to-cap2">צילום בגד</button></div>';el('to-cap2').onclick=function(){go('capture')};el('alts').innerHTML='';return}
+  var box=document.createElement('div');box.className='stage';
+  var get=function(s){return c.set.filter(function(x){return x.slot===s})[0]};
+  var out=get('outer'),sh=get('shoes');
+  box.appendChild(tile(get('top')));
+  box.appendChild(out?tile(out):tile(get('bottom')));
+  if(out)box.appendChild(tile(get('bottom')));
+  if(sh)box.appendChild(tile(sh,out?'':'wide'));
+  if(out&&sh){box.lastChild.className='tile'}
+  else if(!out&&!sh){}
+  st.appendChild(box);
+  var al=el('alts');al.innerHTML='';
+  cands.forEach(function(k,i){var b=document.createElement('button');b.type='button';b.className='alt';b.setAttribute('aria-label','לוק '+(i+1));
+    if(i===S.i)b.setAttribute('aria-current','true');k.set.slice(0,4).forEach(function(it){b.appendChild(img(it))});
+    b.onclick=function(){S.i=i;renderLook()};al.appendChild(b)});
+}
+el('next').onclick=function(){if(cands.length){S.i=(S.i+1)%cands.length;renderLook()}};
+el('prev').onclick=function(){if(cands.length){S.i=(S.i-1+cands.length)%cands.length;renderLook()}};
+el('temp').oninput=function(e){S.t=+e.target.value;build();renderLook()};
+
+function renderSettings(){
+  chipRow('s-theme',[['auto','אוטומטי'],['light','בהיר'],['dark','כהה']],S.theme,function(k){S.theme=k;applyTheme();saveSettings();renderSettings()});
+  chipRow('s-style',[['no','רגוע'],['yes','חכם']],S.smart?'yes':'no',function(k){S.smart=k==='yes';saveSettings();renderSettings()});
+  el('s-cold').value=S.cold;
+}
+el('s-cold').oninput=function(e){S.cold=+e.target.value;saveSettings()};
+el('s-mine').onclick=function(){items.forEach(function(i){dbDel(i.id)});items=[];el('s-mine').textContent='הארון ריק'};
+
+/* ---------- capture: photo -> cutout on white ---------- */
+var queue=[],cur=null;
+function renderCapture(){
+  var has=!!cur;el('cap-start').hidden=has;el('cap-result').hidden=!has;
+  el('qinfo').textContent=queue.length?('עוד '+queue.length+' בתור'):'';
+  if(!has)return;
+  el('im-before').src=cur.before;el('im-after').src=cur.url;el('sw').style.background=cur.color;
+  chipRow('c-slot',Object.keys(SLOTS).map(function(k){return[k,SLOTS[k]]}),cur.slot,function(k){cur.slot=k;renderCapture()});
+  chipRow('c-style',Object.keys(STYLES).map(function(k){return[k,STYLES[k]]}),String(cur.f),function(k){cur.f=+k;renderCapture()});
+}
+function next(){cur=queue.shift()||null;renderCapture()}
+el('c-add').onclick=function(){var added={id:++uid,slot:cur.slot,color:cur.color,f:cur.f,url:cur.url,own:true};items.unshift(added);dbPut(added);
+  if(!queue.length){next();go('closet')}else next()};
+el('c-skip').onclick=next;
+
+function cutout(img){
+  var MAX=480,sc=Math.min(1,MAX/Math.max(img.width,img.height));
+  var w=Math.max(8,Math.round(img.width*sc)),h=Math.max(8,Math.round(img.height*sc));
+  var cv=document.createElement('canvas');cv.width=w;cv.height=h;
+  var cx=cv.getContext('2d',{willReadFrequently:true});cx.drawImage(img,0,0,w,h);
+  var id=cx.getImageData(0,0,w,h),d=id.data,N=w*h,rs=[],gs=[],bs=[],x,y,p,k;
+  var edge=function(px,py){p=(py*w+px)*4;rs.push(d[p]);gs.push(d[p+1]);bs.push(d[p+2])};
+  for(x=0;x<w;x+=3){edge(x,0);edge(x,h-1)}for(y=0;y<h;y+=3){edge(0,y);edge(w-1,y)}
+  var med=function(a){a.sort(function(m,n){return m-n});return a[a.length>>1]};
+  var br=med(rs.slice()),bg=med(gs.slice()),bb=med(bs.slice());
+  var dist=function(q){var dr=d[q]-br,dg=d[q+1]-bg,db=d[q+2]-bb;return Math.sqrt(dr*dr*.3+dg*dg*.59+db*db*.11)*1.7};
+  function run(thr){
+    var bgm=new Uint8Array(N),stack=[];
+    var push=function(px,py){var n=py*w+px;if(!bgm[n]&&dist(n*4)<thr){bgm[n]=1;stack.push(n)}};
+    for(var a=0;a<w;a++){push(a,0);push(a,h-1)}for(var b=0;b<h;b++){push(0,b);push(w-1,b)}
+    while(stack.length){var q=stack.pop(),qx=q%w,qy=(q-qx)/w;
+      if(qx>0)push(qx-1,qy);if(qx<w-1)push(qx+1,qy);if(qy>0)push(qx,qy-1);if(qy<h-1)push(qx,qy+1)}
+    var fg=0;for(var i=0;i<N;i++)if(!bgm[i])fg++;return{m:bgm,fg:fg};
+  }
+  var spread=0,i;for(i=0;i<rs.length;i++)spread+=Math.abs(rs[i]-br)+Math.abs(gs[i]-bg)+Math.abs(bs[i]-bb);spread/=rs.length*3;
+  var thr=Math.min(80,Math.max(34,spread*2.5+30)),r=run(thr);
+  if(r.fg<N*.05)r=run(thr*.55);
+  if(r.fg<N*.03||r.fg>N*.97)return null;
+  var m=r.m,er=new Uint8Array(m);
+  for(y=1;y<h-1;y++)for(x=1;x<w-1;x++){k=y*w+x;if(!m[k]&&m[k-1]+m[k+1]+m[k-w]+m[k+w]>=2)er[k]=1}
+  var lab=new Int32Array(N),best=0,bestN=0,curL=0,st=[];
+  for(k=0;k<N;k++){if(er[k]||lab[k])continue;curL++;var cnt=0;st.push(k);lab[k]=curL;
+    while(st.length){var q=st.pop();cnt++;var qx=q%w,nb=[qx>0?q-1:-1,qx<w-1?q+1:-1,q>=w?q-w:-1,q<N-w?q+w:-1];
+      for(var t=0;t<4;t++){var n=nb[t];if(n>=0&&!er[n]&&!lab[n]){lab[n]=curL;st.push(n)}}}
+    if(cnt>bestN){bestN=cnt;best=curL}}
+  var x0=w,y0=h,x1=0,y1=0,buckets={};
+  for(y=0;y<h;y++)for(x=0;x<w;x++){k=y*w+x;
+    if(lab[k]===best){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;
+      var q4=k*4,key=(d[q4]>>5)+','+(d[q4+1]>>5)+','+(d[q4+2]>>5),bk=buckets[key]||(buckets[key]={n:0,r:0,g:0,b:0});
+      bk.n++;bk.r+=d[q4];bk.g+=d[q4+1];bk.b+=d[q4+2]}else d[k*4+3]=0}
+  var al=new Uint8Array(N);for(k=0;k<N;k++)al[k]=d[k*4+3];
+  for(y=1;y<h-1;y++)for(x=1;x<w-1;x++){k=y*w+x;if(al[k]){var sm=0;for(var dy=-1;dy<=1;dy++)for(var dx=-1;dx<=1;dx++)sm+=al[k+dy*w+dx];d[k*4+3]=sm/9}}
+  cx.putImageData(id,0,0);
+  var bw=x1-x0+1,bh=y1-y0+1,pad=Math.round(Math.max(bw,bh)*.04),out=document.createElement('canvas');
+  out.width=bw+pad*2;out.height=bh+pad*2;out.getContext('2d').drawImage(cv,x0,y0,bw,bh,pad,pad,bw,bh);
+  var top=null;Object.keys(buckets).forEach(function(kk){if(!top||buckets[kk].n>top.n)top=buckets[kk]});
+  var hx=function(v){v=Math.round(v/top.n);return(v<16?'0':'')+v.toString(16)};
+  var ar=bw/bh;
+  return{url:out.toDataURL('image/png'),color:'#'+hx(top.r)+hx(top.g)+hx(top.b),slot:ar>1.45&&bh<h*.5?'shoes':(ar<.82?'bottom':'top')};
+}
+el('file').addEventListener('change',function(e){
+  var files=[].slice.call(e.target.files||[]);
+  files.forEach(function(f){var fr=new FileReader();
+    fr.onload=function(){var im=new Image();
+      im.onload=function(){
+        var r=null;try{r=cutout(im)}catch(err){r=null}
+        var c=document.createElement('canvas'),s=Math.min(1,480/Math.max(im.width,im.height));
+        c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+        var before=c.toDataURL('image/jpeg',.8);
+        if(!r)r={url:before,color:'#808080',slot:'top'};
+        var l=hsl(r.color).l;r.before=before;r.f=r.slot==='top'?0:(l<.3?1:0);
+        if(cur)queue.push(r);else{cur=r}
+        renderCapture()};
+      im.src=fr.result};
+    fr.readAsDataURL(f)});
+  e.target.value='';
+});
+
+/* ---------- start ---------- */
+applyTheme();
+var h0=(location.hash||'').slice(1);
+go(VIEWS.some(function(v){return v[0]===h0})?h0:'closet');
+dbOpen(function(){dbAll(function(list){
+  if(!list.length)return;
+  items=list.sort(function(a,b){return b.id-a.id}).concat(items);
+  list.forEach(function(i){if(i.id>uid)uid=i.id});go(S.view)})});
+</script>
+
+</body></html>
